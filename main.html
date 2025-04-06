@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JPG to PNG Converter</title>
+    <style>
+        body {
+            background-color: rgb(111, 214, 214);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+        canvas {
+            display: none;
+        }
+        .output {
+            margin-top: 20px;
+        }
+        #downloadButton {
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            background-color: #a41930;
+            color: rgb(255, 255, 255);
+            border: none;
+            border-radius: 5px;
+        }
+        #downloadButton:hover{
+            background-color: rgb(240, 60, 90);
+        }
+        .customfileupload{
+            display:inline-block;
+            padding:10px 20px;
+            background-color: rgb(10, 41, 164);
+            color: rgb(255, 255, 255);
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .customfileupload:hover{
+            background-color: rgb(76, 96, 211);
+        }
+    </style>
+</head>
+<body>
+
+<h1><u>JPEG to PNG Converter</u></h1>
+<br><br>
+<input type="file" id="fileInput" accept="image/jpeg" style="display:none;">
+<label for="fileInput" class="customfileupload">Choose JPG File</label>
+<br>
+<canvas id="canvas"></canvas>
+<div class="output">
+    <a id="downloadlink" style="display:none;">
+        <button id="downloadButton">Download PNG</button>
+    </a>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const canvas = document.getElementById('canvas');
+    const downloadlink = document.getElementById('downloadlink');
+    const downloadButton = document.getElementById('downloadBtn');
+    
+    fileInput.addEventListener('change', handle_file);
+
+    function handle_file(event) {
+        const file = event.target.files[0];
+        if (file && file.type === 'image/jpeg') {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // Set canvas size to match image
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+
+                    // Draw image onto canvas
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+
+                    // Convert canvas content to PNG and show the download button
+                    const pngDataUrl = canvas.toDataURL('image/png');
+                    const a = document.createElement('a');
+                    a.href = pngDataUrl;
+                    a.download = 'converted_image.png';
+
+                    // Show the download button
+                    downloadlink.href = pngDataUrl;
+                    downloadlink.style.display = 'inline';
+                    downloadButton.addEventListener('click', () => {
+                        a.click();
+                    });
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            alert('Please upload a JPG image.');
+        }
+    }
+</script>
+
+</body>
+</html>
